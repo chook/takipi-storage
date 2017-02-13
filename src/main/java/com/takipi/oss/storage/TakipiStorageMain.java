@@ -20,6 +20,12 @@ import javax.servlet.FilterRegistration;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 import com.takipi.oss.storage.health.FilesystemHealthCheck;
+
+import com.takipi.oss.storage.resources.diag.PingStorageResource;
+import com.takipi.oss.storage.resources.diag.StatusStorageResource;
+import com.takipi.oss.storage.resources.diag.TreeStorageResource;
+import com.takipi.oss.storage.resources.diag.VersionStorageResource;
+
 import com.takipi.oss.storage.resources.fs.BinaryStorageResource;
 import com.takipi.oss.storage.resources.fs.JsonMultiDeleteStorageResource;
 import com.takipi.oss.storage.resources.fs.JsonMultiFetchStorageResource;
@@ -61,6 +67,7 @@ public class TakipiStorageMain extends Application<TakipiStorageConfiguration> {
         environment.jersey().register(new JsonSimpleFetchStorageResource(filesystem));
         environment.jersey().register(new JsonSimpleSearchStorageResource(filesystem));
         environment.jersey().register(new PingStorageResource());
+        environment.jersey().register(new VersionStorageResource());
     }
 
     private Filesystem configureFilesystem(TakipiStorageConfiguration configuration, Environment environment) {
@@ -76,6 +83,7 @@ public class TakipiStorageMain extends Application<TakipiStorageConfiguration> {
 
     private Filesystem configureFolderFilesystem(TakipiStorageConfiguration configuration, Environment environment) {
         log.debug("Using local filesystem at: {}", configuration.getFolderFs().getFolderPath());
+
         environment.jersey().register(new TreeStorageResource(configuration));
         environment.jersey().register(new StatusStorageResource(configuration));
         return new SimpleFilesystem(configuration.getFolderFs().getFolderPath(), configuration.getFolderFs().getMaxUsedStoragePercentage());

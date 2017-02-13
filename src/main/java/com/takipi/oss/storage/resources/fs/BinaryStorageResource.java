@@ -15,7 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Path("/storage/v1/binary/{serviceId}/{type}/{key}")
+@Path("/storage/v1/binary/{serviceId}/{type}/{key:.+}")
 @Consumes(MediaType.APPLICATION_OCTET_STREAM)
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 public class BinaryStorageResource {
@@ -109,7 +109,9 @@ public class BinaryStorageResource {
     protected Response internalGet(Record record) throws IOException {
         InputStream is = filesystem.get(record);
         
-        return Response.ok(is).build();
+        long size = fs.size(record);
+        
+        return Response.ok(is).header(HttpHeaders.CONTENT_LENGTH, size).build();
     }
 
     protected Response internalHead(Record record) throws IOException {
